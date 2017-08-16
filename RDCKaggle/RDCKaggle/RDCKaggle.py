@@ -23,8 +23,19 @@ def plot_classes():
     plt.title("Distribution of genetic mutation classes", fontsize=18)
     plt.show()
 
+def plot_gene_by_class():
+    fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(12,12))
 
-def main():
+    for i in range(3):
+        for j in range(3):
+            gene_count_grp = train_variants_df[train_variants_df["Class"]==((i*3+j)+1)].groupby('Gene')["ID"].count().reset_index()
+            sorted_gene_group = gene_count_grp.sort_values('ID', ascending=False)
+            sorted_gene_group_top_7 = sorted_gene_group[:7]
+            sns.barplot(x="Gene", y="ID", data=sorted_gene_group_top_7, ax=axs[i][j])
+
+    plt.show()
+
+def print_varient_data():
     print("Train Variant".ljust(15), train_variants_df.shape)
     print("Train Text".ljust(15), train_text_df.shape)
     print("Test Variant".ljust(15), test_variants_df.shape)
@@ -38,7 +49,16 @@ def main():
     print("unique variations :", len(train_variants_df.Variation.unique()))
     print("classes: ", len(train_variants_df.Class.unique()))
 
-    plot_classes()
+    gene_group = train_variants_df.groupby("Gene")['Gene'].count()
+    minimal_occ_genes = gene_group.sort_values(ascending=True)[:10]
+    print("Genes with maximal occurences\n", gene_group.sort_values(ascending=False)[:10])
+    print("\nGenes with minimal occurences\n", minimal_occ_genes)
+
+
+def main():
+    #print_varient_data()
+    #plot_classes()
+    #plot_gene_by_class()
 
 if __name__ == "__main__":
     main()
